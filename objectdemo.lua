@@ -1,16 +1,11 @@
 Person = { age = 0 }
 
---setmetatable( Person, { __index = _G } )
-
--- Person.new = function()
--- 	local o = {}
--- 	setmetatable( o, { __index = Person } )
--- 	return o
--- end
+-- setmetatable( Person, { __index = _G } )
+-- setmetatable( Person, { __index = Person } ) -- 这样写后, 取Person不存在的属性时会导致无限循环
 
 function Person:new()
 	local o = {}
-	setmetatable( o, self )
+	setmetatable( o, self )		-- 这两句等价于setmetatable( o, { __index = self } )
 	self.__index = self
 	return o
 end

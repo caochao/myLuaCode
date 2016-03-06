@@ -10,14 +10,35 @@ function createRGB( r, g, b )
 	return color
 end
 
-function printResult()
-	for k, v in pairs( results ) do
+function printTable( tab )
+	for k, v in pairs( tab ) do
 		print( k, v )
 	end
 end
 
 local rgb = createRGB( 10, 10, 10 )
-printResult()
+printTable( results )
 rgb = nil		-- { red = 10, green = 10, blue = 10 }除results table引用外再无其它引用, 会被垃圾收集
 collectgarbage()
-printResult()
+printTable( results )
+
+
+-- 对象属性
+local objAttrMap = {}
+setmetatable( objAttrMap, { __mode = "k" } )
+function setObjAttr( obj, attr )
+	objAttrMap[obj] = attr
+end
+
+function func()
+end
+
+local tab = {}
+
+setObjAttr( func, "funcName" )
+setObjAttr( tab, "attrValue" )
+printTable( objAttrMap)
+func = nil
+tab = nil
+collectgarbage()
+printTable( objAttrMap)

@@ -1,4 +1,20 @@
--- 用闭包保持状态, 实现迭代器
+--[[
+	泛型for循环等价于while循环, 形式转换如下:
+	for var_list in exp_list do					-- 变量列表, 表达式列表
+		loop_body								-- 表达式必须返回3个值, 即迭代函数, 恒定状态, 控制变量, 不足补nil, 过多丢弃
+	end
+	------>
+	------>
+	f, s, var = <exp_list>						-- 迭代函数, 恒定状态, 控制变量初值 = 调用迭代器工厂
+	while true do
+		var_1, var_2, ... var_n = f( s, var )	-- 以恒定状态, 控制变量调用迭代函数, 返回结果赋值给表达式列表
+		var = var_1								-- 表达式列表第1个元素为控制变量, 为nil时结束循环
+		if var == nil then break end
+		<loop_body>
+	end
+]]
+
+-- 迭代器工厂, 用闭包保持状态
 function values( t )
 	local i = 0
 	return function()
@@ -7,6 +23,7 @@ function values( t )
 	end
 end
 
+-- while形式
 function testIter( t )
 	local iter = values( t )
 	while true do
@@ -16,7 +33,7 @@ function testIter( t )
 	end
 end
 
--- for循环调用迭代函数, 判断何时结束迭代
+-- for形式
 function testIter2( t )
 	for val in values( t ) do
 		print( val )
@@ -30,7 +47,7 @@ testIter2( t )
 -- 实现自己的ipairs函数
 -- 3个重要概念, 迭代函数, 恒定状态, 控制变量
 function iter( t, i )
-	i = i + 1
+	local i = i + 1
 	local v = t[i]
 	if v then
 		return i, v
